@@ -1,5 +1,5 @@
 <script setup>//setup可以将tableData暴露出去
-import { ref, getCurrentInstance, onMounted } from 'vue'
+import { ref, getCurrentInstance, onMounted, reactive } from 'vue'
 
 
 const { proxy } = getCurrentInstance()
@@ -7,13 +7,72 @@ const getImageUrl = (user) => {
   return new URL(`../assets/images/${user}.png`, import.meta.url).href
 }
 
-const tableData = ref([])
-const countData = ref([])
+const tableData = ref( [] )
+const countData = ref( [] )
+const chartData = ref( [] )
+
 const tableLabel = ref({
     name: "课程",
     todayBuy: "今日购买",
     monthBuy: "本月购买",
     totalBuy: "总购买",
+})
+
+const xOptions = reactive({
+      // 图例文字颜色
+      textStyle: {
+        color: "#333",
+      },
+      legend: {}, //用于配置图例组件，当前为空对象，表示使用默认配置。
+      grid: {
+        left: "20%", //设置网格的左边距为20%。
+      },
+      // 提示框
+      tooltip: {
+        trigger: "axis", //设置提示框的触发方式为“axis”，即按坐标轴触发。
+      },
+      xAxis: {
+        type: "category", // 设置X轴的类型为“category”，即类目轴。
+        data: [], //X轴的数据数组，当前为空。
+        axisLine: {
+          lineStyle: {
+            color: "#17b3a3",//设置X轴线的颜色。
+          },
+        },
+        axisLabel: {
+          interval: 0, //设置X轴标签的显示间隔，0表示全部显示。
+          color: "#333", //设置X轴标签的文字颜色。
+        },
+      },
+      yAxis: [ //是一个数组，可以配置多个Y轴。
+        {
+          type: "value", //设置Y轴的类型为“value”，即数值轴。
+          axisLine: {
+            lineStyle: {
+              color: "#17b3a3",
+            },
+          },
+        },
+      ],
+      color: ["#2ec7c9", "#b6a2de", "#5ab1ef", "#ffb980", "#d87a80", "#8d98b3"], //设置图表的颜色序列，用于不同系列的区分。
+      series: [],//存储图表的数据系列
+})
+
+const pieOptions = reactive({
+  tooltip: {
+    trigger: "item",
+  },
+  legend: {},
+  color: [
+    "#0f78f4",
+    "#dd536b",
+    "#9462e5",
+    "#a6a6a6",
+    "#e1bb22",
+    "#39c362",
+    "#3ed1cf",
+  ],
+  series: []
 })
 
 const getTableData = async () => {
@@ -25,9 +84,17 @@ const getCountData = async () => {
   const data = await proxy.$api.getCountData()
   countData.value = data
 }
+
+const getChartData = async () => {
+  const data = await proxy.$api.getChartData()
+  console.log(data)
+  chartData.value = data
+}
+
 onMounted( () => {
   getTableData()
   getCountData()
+  getChartData()
 } )
 </script>
 

@@ -21,4 +21,12 @@ export default {
             mock: true
         } );
     },
+    getChartData() {
+        return request( {
+            // url: '/api/home/getTableData',
+            url: '/home/getChartData',
+            method: 'get',
+            mock: true
+        } );
+    },
 }
