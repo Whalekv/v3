@@ -23,8 +23,15 @@ export default {
     },
     getChartData() {
         return request( {
-            // url: '/api/home/getTableData',
             url: '/home/getChartData',
+            method: 'get',
+            mock: true
+        } );
+    },
+
+    getUserData() {
+        return request( {
+            url: '/home/getUserData',
             method: 'get',
             mock: true
         } );
