@@ -1,6 +1,6 @@
 <script setup>//setup可以将tableData暴露出去
 import { ref, getCurrentInstance, onMounted, reactive } from 'vue'
-
+import * as echarts from 'echarts'
 
 const { proxy } = getCurrentInstance()
 const getImageUrl = (user) => {
@@ -10,6 +10,7 @@ const getImageUrl = (user) => {
 const tableData = ref( [] )
 const countData = ref( [] )
 const chartData = ref( [] )
+const observer = ref( null )
 
 const tableLabel = ref({
     name: "课程",
@@ -86,9 +87,62 @@ const getCountData = async () => {
 }
 
 const getChartData = async () => {
-  const data = await proxy.$api.getChartData()
-  console.log(data)
-  chartData.value = data
+  const { orderData, videoData, userData } = await proxy.$api.getChartData()
+  //第一个表格
+  xOptions.xAxis.data = orderData.date
+  xOptions.series = Object.keys( orderData.data[0] ).map( val => ({
+    name: val,
+    data: orderData.data.map( item => item[val] ),
+    type: "line"
+  }))
+  /**
+   *  获取键名：从 orderData.data[0] 中获取所有键名。
+      遍历键名：对每个键名进行处理。
+      生成系列对象：
+      设置 name 为当前键名。
+      设置 data 为 orderData.data 中对应键名的所有值。
+      设置 type 为 "line"。
+      添加到 xOptions.series：将生成的系列对象添加到 xOptions.series 数组中。
+   */
+  const oneEchart = echarts.init( proxy.$refs[ 'echart' ] )
+  oneEchart.setOption( xOptions )
+  //第二个表格
+  xOptions.xAxis.data = userData.map( item => item.date)
+  xOptions.series = [
+    {
+      name: "新增用户",
+      data: userData.map( item => item.new),
+      type: "bar"
+    },
+    {
+      name: "活跃用户",
+      data: userData.map( item => item.active),
+      type: "bar"
+    },
+  ]
+  const twoEchart = echarts.init( proxy.$refs[ 'userEchart' ] )
+  twoEchart.setOption( xOptions )
+  //第三个表格
+  pieOptions.series = [
+    {
+      data: videoData,
+      type: "pie"
+    }
+  ]
+  const threeEchart = echarts.init( proxy.$refs[ 'videoEchart' ] )
+  threeEchart.setOption( pieOptions )
+
+  //监听页面的变化
+  //如果监听器的容器大小发生变化 改变了以后 会执行回调函数
+  observer.value = new ResizeObserver( () => {
+    oneEchart.resize()
+    twoEchart.resize()
+    threeEchart.resize()
+  } )
+  //假设容器存在
+  if( proxy.$refs['echart'] ){
+    observer.value.observe( proxy.$refs['echart'] )
+  }
 }
 
 onMounted( () => {
@@ -143,6 +197,17 @@ onMounted( () => {
             <p class="num">￥{{ item.value }}</p>  <!-- 双大括号 {{ }} 用于插值表达式，即将数据动态地插入到模板中。 -->
             <p class="txt">{{ item.name }}</p>
           </div>
+        </el-card>
+      </div>
+      <el-card class="top-echart">
+        <div ref="echart" style="height: 280px"></div>
+      </el-card>
+      <div class="graph">
+        <el-card>
+          <div ref="userEchart" style="height: 240px;"></div>
+        </el-card>
+        <el-card>
+          <div ref="videoEchart" style="height: 240px;"></div>
         </el-card>
       </div>
     </el-col>
@@ -221,6 +286,15 @@ onMounted( () => {
           text-align: center;
           color: #999;
         }
+      }
+    }
+    .graph{
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      .el-card{
+        width: 48%;
+        height: 260px;
       }
     }
   }
