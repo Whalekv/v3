@@ -3,6 +3,7 @@ import {ref, computed} from 'vue'//用于从 Vue 库中导入 ref 和 computed �
 // ref用法：用法：const myRef = ref(initialValue)
 // computed用法：const doubleCount = computed(() => count.value * 2) 创建一个计算属性，其值基于其他响应式数据动态计算。
 import { useAllStore } from '@/stores'
+import { useRouter, useRoute } from 'vue-router';
 const list =ref([
       	{
           path: '/home',
@@ -53,6 +54,13 @@ const hasChildren = computed(() => list.value.filter(item => item.children))
 const store = useAllStore()
 const isCollapse = computed( () => store.state.isCollapse )
 const width = computed( () => isCollapse.value ? '64px' : '180px')
+const router = useRouter()
+const route = useRoute()
+const activeMenu = computed(()=> route.path)
+const handleMenu = (item) => {
+    router.push(item.path)
+    store.selectMenu(item)
+}
 </script>
 
 <template>
@@ -62,6 +70,7 @@ const width = computed( () => isCollapse.value ? '64px' : '180px')
         text-color="#fff"
         :collapse="isCollapse"
         :collapse-transition="false"
+        :default-active="activeMenu"
       >
       <h3 v-show="!isCollapse">通用后台管理系统</h3>
       <h3 v-show="isCollapse">后台</h3>
@@ -69,6 +78,7 @@ const width = computed( () => isCollapse.value ? '64px' : '180px')
             v-for="item in noChildren"
             :index="item.path" 
             :key="item.path"
+            @click = "handleMenu(item)"
         >
         <component class="icons" :is="item.icon"></component>
         <span>{{ item.label }}</span>
@@ -90,6 +100,7 @@ const width = computed( () => isCollapse.value ? '64px' : '180px')
                 v-for="(subItem, subIndex) in item.children"
                 :index="subItem.path" 
                 :key="subItem.path"
+                @click = "handleMenu(subItem)"
             >
                 <component class="icons" :is="subItem.icon"></component>
                 <span>{{ subItem.label }}</span>
