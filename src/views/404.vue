@@ -1,7 +1,7 @@
 <template>
     <div class="exception">
         <img :src = "getImageUrl('404')"/>
-        <el-button class="btn-home" @click="goHome">返回 上一个页面</el-button>
+        <el-button class="btn-home" @click="goHome">返回  上一个页面</el-button>
     </div>
 </template>
 
