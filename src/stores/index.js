@@ -37,6 +37,7 @@ export const useAllStore = defineStore('allData', () => {
         if(val.name === 'home'){
             state.value.currentMenu = null
         }else{
+            state.value.currentMenu = val
             let index = state.value.tags.findIndex((item) => item.name === val.name)
             index === -1 ? state.value.tags.push(val) : ''
         }
