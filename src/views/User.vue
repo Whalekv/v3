@@ -1,9 +1,7 @@
 <script setup>
 import { ref, getCurrentInstance, onMounted, reactive, nextTick} from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { id } from 'element-plus/es/locales.mjs';
-import { valid } from 'mockjs';
-import { time } from 'echarts';
+
 const handleClick = () => {
   console.log('click')
 }

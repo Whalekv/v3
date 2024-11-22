@@ -4,50 +4,6 @@ import {ref, computed} from 'vue'//用于从 Vue 库中导入 ref 和 computed �
 // computed用法：const doubleCount = computed(() => count.value * 2) 创建一个计算属性，其值基于其他响应式数据动态计算。
 import { useAllStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router';
-const list =ref([
-      	{
-          path: '/home',
-          name: 'home',
-          label: '首页',
-          icon: 'house',
-          url: 'Home'
-      	},
-        {
-            path: '/mall',
-            name: 'mall',
-            label: '商品管理',
-            icon: 'video-play',
-            url: 'Mall'
-        },
-        {
-            path: '/user',
-            name: 'user',
-            label: '用户管理',
-            icon: 'user',
-            url: 'User'
-        },
-        {
-            path: 'other',
-            label: '其他',
-            icon: 'location',
-            children: [
-                {
-                    path: '/page1',
-                    name: 'page1',
-                    label: '页面1',
-                    icon: 'setting',
-                    url: 'Page1'
-                },
-                {
-                    path: '/page2',
-                    name: 'page2',
-                    label: '页面2',
-                    icon: 'setting',
-                    url: 'Page2'
-                }
-            ]
-        }
-])
 
 const noChildren = computed(() => list.value.filter(item => !item.children))
 const hasChildren = computed(() => list.value.filter(item => item.children))
@@ -57,6 +13,7 @@ const width = computed( () => isCollapse.value ? '64px' : '180px')
 const router = useRouter()
 const route = useRoute()
 const activeMenu = computed(()=> route.path)
+const list = computed(() => store.state.menuList)
 const handleMenu = (item) => {
     router.push(item.path)
     store.selectMenu(item)

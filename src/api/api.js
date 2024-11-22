@@ -1,8 +1,6 @@
 //整个项目api的统一管理
-import { mock } from "mockjs";
 import request from "./request";
-import { da } from "element-plus/es/locales.mjs";
-import { Delete } from "@element-plus/icons-vue";
+
 
 //请求首页左侧表格的数据
 
@@ -61,4 +59,11 @@ export default {
             data
         } );
     },
+    getMenu(params){
+        return request({
+            url:'permission/getMenu',
+            method:'post',
+            data:params
+        })
+    }
 }
